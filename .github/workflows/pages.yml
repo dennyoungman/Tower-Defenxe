@@ -3,7 +3,7 @@ name: Deploy playable build to GitHub Pages
 on:
   push:
     branches:
-      - feat/playable-foundation
+      - main
   workflow_dispatch:
 
 permissions:
@@ -22,7 +22,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout playable branch
+      - name: Checkout main
         uses: actions/checkout@v4
 
       - name: Configure Pages
