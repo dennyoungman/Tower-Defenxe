@@ -14,7 +14,7 @@ function unlocked(d){return d.era<=state.era&&(!d.requires||state.research.has(d
 function price(d){return Math.round(d.cost*(d.kind==='artillery'?(faction().artilleryCost||1):1))}
 function setMessage(m){ui.message.textContent=m}
 function updateUI(force=false){
-  ui.era.textContent=ERAS[state.era].name.toUpperCase();ui.gold.textContent=Math.floor(state.gold);ui.science.textContent=Math.floor(state.science);ui.lives.textContent=state.lives;ui.wave.textContent=`${state.wave} / 48`;ui.faction_desc.textContent=faction().desc;
+  ui.era.textContent=ERAS[state.era].name.toUpperCase();ui.gold.textContent=Math.floor(state.gold);ui.science.textContent=Math.floor(state.science);ui.lives.textContent=state.lives;ui.wave.textContent=`${state.wave} / 48`;ui['faction-desc'].textContent=faction().desc;
   const key=[state.era,state.faction,[...state.research].sort().join(','),state.selectedBuild,state.selectedTower?.cx,state.selectedTower?.cy,state.towers.length].join('|');
   if(force||key!==lastUiKey){lastUiKey=key;renderBuildList();renderSelected();}
   checkEra();
