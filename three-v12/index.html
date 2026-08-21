@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#071018">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Chronicle Defence — 3D Proof</title>
+<link rel="stylesheet" href="style.css?v=12">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="rotate"><strong>ROTATE TO LANDSCAPE</strong><span>This proof is designed for landscape play.</span></div>
+<div id="app">
+  <div id="stage"></div>
+  <div id="loading" class="loading">
+    <div class="seal">☾</div>
+    <h1>CONSTANTINOPLE</h1>
+    <p id="load-status">Preparing 3D battlefield…</p>
+    <div class="loadbar"><i id="load-fill"></i></div>
+  </div>
+  <header id="hud" class="hud hidden">
+    <div class="identity"><small>OTTOMAN CAMPAIGN</small><b>CONSTANTINOPLE</b></div>
+    <div class="stat"><span>WAVE</span><b id="wave">0 / 12</b></div>
+    <div class="stat"><span>BASE</span><b id="lives">20</b></div>
+    <div class="stat"><span>GOLD</span><b id="gold">900</b></div>
+    <button id="speed" class="speed">×1</button>
+  </header>
+  <div id="message" class="message hidden">Drag a defence onto open ground.</div>
+  <section id="arsenal" class="arsenal hidden">
+    <div class="arsenal-title"><small>IMPERIAL</small><b>ARSENAL</b></div>
+    <button class="tower-card" data-tower="archer">
+      <span class="tower-emblem archer-emblem"></span><span class="tower-copy"><b>ARCHER POST</b><small>Long-range volleys</small></span><strong>180</strong>
+    </button>
+    <button class="tower-card" data-tower="ballista">
+      <span class="tower-emblem ballista-emblem"></span><span class="tower-copy"><b>BALLISTA</b><small>Heavy bolt damage</small></span><strong>270</strong>
+    </button>
+    <button class="tower-card" data-tower="watchtower">
+      <span class="tower-emblem watch-emblem"></span><span class="tower-copy"><b>WATCHTOWER</b><small>Fast wide coverage</small></span><strong>145</strong>
+    </button>
+  </section>
+  <button id="start-wave" class="start hidden"><span>⚔</span><b>START WAVE</b><small>DEFEND THE GATE</small></button>
+  <aside id="tower-info" class="tower-info hidden">
+    <button id="close-info">×</button>
+    <small>SELECTED DEFENCE</small>
+    <h2 id="tower-name">ARCHER POST</h2>
+    <p id="tower-stats"></p>
+    <div class="info-rule"></div>
+    <p class="hint">Combat tuning is intentionally minimal in this visual proof.</p>
+  </aside>
+  <div id="result" class="result hidden"><div><small>THE CITY HOLDS</small><h1 id="result-title">VICTORY</h1><p id="result-text">Constantinople survives the assault.</p><button id="replay">REPLAY PROOF</button></div></div>
+  <div id="fatal" class="fatal hidden"><h2>3D PROOF FAILED TO START</h2><p id="fatal-text"></p><button onclick="location.reload()">RELOAD</button></div>
+</div>
+<script type="module" src="game.js?v=12"></script>
+</body>
+</html>
