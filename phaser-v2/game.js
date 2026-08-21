@@ -19,7 +19,7 @@ function drawWorld(s){
 const g=s.add.graphics();g.fillGradientStyle(0x7f9b68,0x6e8d61,0x3c674b,0x365b45,1);g.fillRect(0,0,960,600);
 // Bosphorus and shoreline
 g.fillStyle(0x2b748a,1);g.fillRect(0,0,142,600);g.fillStyle(0x4b91a1,.45);g.fillRect(14,0,6,600);g.fillRect(72,0,4,600);g.fillStyle(0xd7c28b,1);g.fillRect(138,0,20,600);g.fillStyle(0x9a835d,.5);g.fillRect(154,0,8,600);
-for(let y=18;y<600;y+=25){g.lineStyle(2,0xb9e2e4,.25);g.beginPath();g.moveTo(10,y);g.bezierCurveTo(46,y-5,82,y+4,126,y);g.strokePath()}
+for(let y=18;y<600;y+=25){g.lineStyle(2,0xb9e2e4,.25);g.beginPath();g.moveTo(10,y);g.lineTo(36,y-3);g.lineTo(64,y+2);g.lineTo(94,y-2);g.lineTo(126,y);g.strokePath()}
 // terrain clusters
 for(let i=0;i<72;i++){const x=(i*173+47)%960,y=(i*97+31)%600;if(x<170||distanceToPath(x,y)<62)continue;const r=5+(i%7);g.fillStyle(i%6===0?0x847861:0x315f3b,1);g.fillCircle(x,y,r);if(i%6!==0){g.fillStyle(0x233d2c,1);g.fillRect(x-2,y,4,10);g.fillStyle(0x47774c,.8);g.fillCircle(x-5,y-3,r*.65)}}
 // road
