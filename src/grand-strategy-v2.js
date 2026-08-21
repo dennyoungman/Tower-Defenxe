@@ -1,0 +1,50 @@
+import * as base from './campaign.js?v=10';
+import {TECHNOLOGIES,ERAS} from './data.js';
+
+export const ERA_WINDOWS=[28,32,36,40,44,0];
+export const DOCTRINES=[
+{id:'levy-system',name:'Levy System',era:0,cost:180,turns:4,effect:'Recruit basic infantry 1 turn faster.'},
+{id:'provincial-rule',name:'Provincial Administration',era:0,cost:220,turns:5,effect:'Reduces early occupation pressure.'},
+{id:'standing-army',name:'Standing Army',era:1,cost:420,turns:6,effect:'Regular formations gain readiness faster.'},
+{id:'merchant-law',name:'Merchant Law',era:1,cost:380,turns:5,effect:'Trade regions gain +5% output.'},
+{id:'professional-corps',name:'Professional Officer Corps',era:2,cost:700,turns:7,effect:'Army upkeep -8% and +5 readiness.'},
+{id:'central-treasury',name:'Central Treasury',era:2,cost:650,turns:6,effect:'State maintenance -6%.'},
+{id:'general-staff',name:'General Staff',era:3,cost:1100,turns:8,effect:'Armies move and recover more efficiently.'},
+{id:'industrial-mobilization',name:'Industrial Mobilization',era:3,cost:1200,turns:8,effect:'Artillery and mechanized recruitment accelerated.'},
+{id:'combined-arms-doctrine',name:'Combined Arms Doctrine',era:4,cost:1700,turns:9,effect:'Modern mixed armies gain readiness bonuses.'},
+{id:'national-logistics',name:'National Logistics',era:4,cost:1600,turns:8,effect:'Supply penalties in hostile territory reduced.'},
+{id:'networked-command',name:'Networked Command',era:5,cost:2300,turns:10,effect:'Modern armies gain command efficiency.'}
+];
+
+export const UNIT_CATALOG={
+levy:{name:'Levy Infantry',eraMin:0,eraMax:1,recruit:1,cost:90,upkeep:4,manpower:55,requires:null,role:'infantry'},
+archers:{name:'Archers',eraMin:0,eraMax:1,recruit:2,cost:120,upkeep:5,manpower:45,requires:'archery',role:'infantry'},
+crossbows:{name:'Crossbow Company',eraMin:1,eraMax:2,recruit:2,cost:170,upkeep:7,manpower:48,requires:'crossbow',role:'infantry'},
+trebuchet:{name:'Trebuchet Battery',eraMin:1,eraMax:2,recruit:3,cost:260,upkeep:12,manpower:32,requires:'siege-engineering',role:'artillery'},
+janissary:{name:'Janissary Regiment',eraMin:2,eraMax:3,recruit:3,cost:320,upkeep:14,manpower:62,requires:'professional-army',role:'infantry',faction:'ottoman'},
+bombard:{name:'Great Bombard Battery',eraMin:2,eraMax:3,recruit:4,cost:470,upkeep:20,manpower:38,requires:'gunpowder',role:'artillery',faction:'ottoman'},
+rifles:{name:'Rifle Regiment',eraMin:3,eraMax:4,recruit:2,cost:360,upkeep:16,manpower:64,requires:'rifling',role:'infantry'},
+fieldartillery:{name:'Field Artillery',eraMin:3,eraMax:5,recruit:3,cost:540,upkeep:23,manpower:40,requires:'modern-artillery',role:'artillery'},
+machineguns:{name:'Machine Gun Company',eraMin:4,eraMax:5,recruit:3,cost:620,upkeep:26,manpower:46,requires:'automatic-weapons',role:'infantry'},
+armor:{name:'Armored Company',eraMin:4,eraMax:5,recruit:4,cost:850,upkeep:38,manpower:52,requires:'mechanization',role:'armor'},
+atgm:{name:'ATGM Company',eraMin:5,eraMax:5,recruit:3,cost:920,upkeep:40,manpower:42,requires:'guided-weapons',role:'antiarmor'}
+};
+
+function ensureArmy(c){if(!Array.isArray(c.armies))c.armies=[{id:'rumelia',name:'Army of Rumelia',commander:'Imperial Commander',region:'edirne',movement:1,maxMovement:1,readiness:88,units:[{type:'levy',strength:100},{type:'archers',strength:100}],recruitQueue:[]}];}
+export function normalizeV2(c){base.normalizeCampaign(c);if(!Number.isFinite(c.scienceReserve))c.scienceReserve=Math.min(c.knowledge||0,250);if(!Number.isFinite(c.sciencePerTurn))c.sciencePerTurn=0;if(!Array.isArray(c.doctrines))c.doctrines=[];if(!('activeDoctrine'in c))c.activeDoctrine=null;if(!Number.isFinite(c.eraEnteredTurn))c.eraEnteredTurn=c.turn||1;ensureArmy(c);return c}
+export function scienceOutput(c){const f=base.forecastTurn(c);return Math.max(8,Math.round(f.knowledge*f.admin));}
+export function doctrineOutput(c){return Math.max(5,Math.round(scienceOutput(c)*.55));}
+export function researchCost(t){return Math.max(120,Math.round((t.cost||50)*5.4));}
+export function researchTurns(c,t){return Math.max(4,Math.min(10,Math.ceil(researchCost(t)/Math.max(1,scienceOutput(c)))));}
+export function startTechV2(c,t){normalizeV2(c);if(c.activeResearch)return{ok:false,reason:'Technology research already active.'};if(c.research.includes(t.id))return{ok:false,reason:'Already researched.'};if(!t.requires.every(x=>c.research.includes(x)))return{ok:false,reason:'Prerequisites missing.'};const cost=researchCost(t);c.activeResearch={id:t.id,progress:0,cost};return{ok:true,cost,turns:researchTurns(c,t)}}
+export function startDoctrine(c,id){normalizeV2(c);if(c.activeDoctrine)return{ok:false,reason:'Doctrine project already active.'};const d=DOCTRINES.find(x=>x.id===id);if(!d)return{ok:false,reason:'Unknown doctrine.'};if(d.era>c.era)return{ok:false,reason:'Doctrine belongs to a later era.'};if(c.doctrines.includes(id))return{ok:false,reason:'Already adopted.'};c.activeDoctrine={id,progress:0,cost:d.cost};return{ok:true,turns:d.turns}}
+export function eraReadiness(c,nextEra){normalizeV2(c);const next=ERAS[nextEra];if(!next)return{ready:false};const spent=c.turn-c.eraEnteredTurn,min=ERA_WINDOWS[c.era]||0,req=next.required||[],techReady=req.every(x=>c.research.includes(x));const currentEraTechs=TECHNOLOGIES.filter(t=>Math.max(0,Math.floor((t.cost||0)/200))<=c.era+1);const completion=currentEraTechs.length?c.research.filter(id=>currentEraTechs.some(t=>t.id===id)).length/currentEraTechs.length:0;return{ready:spent>=min&&techReady&&completion>=.35,spent,min,techReady,completion}}
+export function startEraV2(c){const r=eraReadiness(c,c.era+1);if(!r.ready)return{ok:false,reason:!r.techReady?'Required breakthrough technologies are missing.':r.spent<r.min?`Remain in this era ${r.min-r.spent} more turns.`:'More technological breadth is required.'};if(c.ageTransition)return{ok:false,reason:'Modernisation already underway.'};c.ageTransition={target:c.era+1,remaining:4,total:4};return{ok:true,turns:4}}
+export function recruitable(c){normalizeV2(c);return Object.entries(UNIT_CATALOG).filter(([id,u])=>c.era>=u.eraMin&&c.era<=u.eraMax&&(!u.requires||c.research.includes(u.requires))&&(!u.faction||u.faction===c.faction));}
+export function recruitUnit(c,armyId,type){normalizeV2(c);const a=c.armies.find(x=>x.id===armyId),u=UNIT_CATALOG[type];if(!a||!u)return{ok:false,reason:'Army or unit not found.'};if(a.units.length+a.recruitQueue.length>=8)return{ok:false,reason:'Army is at its 8-company capacity.'};if(!recruitable(c).some(([id])=>id===type))return{ok:false,reason:'This formation is not currently recruitable.'};if(c.treasury<u.cost)return{ok:false,reason:'Insufficient Treasury.'};if(c.manpower<u.manpower)return{ok:false,reason:'Insufficient Manpower.'};c.treasury-=u.cost;c.manpower-=u.manpower;a.recruitQueue.push({type,remaining:u.recruit,total:u.recruit});return{ok:true,turns:u.recruit}}
+export function moveArmy(c,armyId,to){normalizeV2(c);const a=c.armies.find(x=>x.id===armyId),r=c.regions.find(x=>x.id===to),from=c.regions.find(x=>x.id===a?.region);if(!a||!r||!from)return{ok:false,reason:'Invalid army movement.'};if(a.movement<1)return{ok:false,reason:'Army has already moved this turn.'};if(!from.neighbors.includes(to))return{ok:false,reason:'Armies move one connected region per turn.'};if(r.owner!==c.faction&&!c.alliances.includes(r.owner)&&!c.wars.includes(r.owner))return{ok:false,reason:'No military access.'};a.region=to;a.movement=0;a.readiness=Math.max(55,a.readiness-5);return{ok:true}}
+export function armyUpkeep(c){normalizeV2(c);return Math.round(c.armies.reduce((sum,a)=>sum+a.units.reduce((s,x)=>s+(UNIT_CATALOG[x.type]?.upkeep||0)*(x.strength/100),0),0));}
+export function endTurnV2(c){normalizeV2(c);const beforeKnowledge=c.knowledge||0,res=base.advanceTurn(c);const gained=Math.max(0,(c.knowledge||0)-beforeKnowledge);c.knowledge=Math.min(250,(c.knowledge||0)-gained);const sci=scienceOutput(c);c.sciencePerTurn=sci;if(c.activeResearch){c.activeResearch.progress+=sci;if(c.activeResearch.progress>=c.activeResearch.cost){if(!c.research.includes(c.activeResearch.id))c.research.push(c.activeResearch.id);res.messages.push(`Technology completed: ${c.activeResearch.id}.`);c.activeResearch=null}}
+const doc=doctrineOutput(c);if(c.activeDoctrine){c.activeDoctrine.progress+=doc;if(c.activeDoctrine.progress>=c.activeDoctrine.cost){c.doctrines.push(c.activeDoctrine.id);res.messages.push(`Doctrine adopted: ${c.activeDoctrine.id}.`);c.activeDoctrine=null}}
+const upkeep=armyUpkeep(c);c.treasury=Math.max(0,c.treasury-upkeep);res.messages.push(`Army upkeep: ${upkeep} Treasury.`);for(const a of c.armies){a.movement=a.maxMovement||1;a.readiness=Math.min(100,a.readiness+2);for(let i=a.recruitQueue.length-1;i>=0;i--){const q=a.recruitQueue[i];q.remaining--;if(q.remaining<=0){a.units.push({type:q.type,strength:80});a.recruitQueue.splice(i,1);res.messages.push(`${UNIT_CATALOG[q.type]?.name||q.type} joined ${a.name}.`)}}for(const u of a.units)u.strength=Math.min(100,u.strength+2)}return{...res,science:sci,doctrine:doc,armyUpkeep:upkeep}}
+export function battleRoster(c,regionId){normalizeV2(c);const armies=c.armies.filter(a=>a.region===regionId||c.regions.find(r=>r.id===a.region)?.neighbors.includes(regionId));const units=new Set(armies.flatMap(a=>a.units.filter(u=>u.strength>25).map(u=>u.type)));return{armies,units}}
