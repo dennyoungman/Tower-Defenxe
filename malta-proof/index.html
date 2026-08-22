@@ -5,27 +5,32 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0c1117">
-<title>Harbour City Malta — Coastal Proof</title>
-<link rel="stylesheet" href="../gta2-proof/style.css?v=5">
+<title>Harbour City Malta — OSM Proof</title>
+<link rel="stylesheet" href="../gta2-proof/style.css?v=6">
+<style>
+#loading{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#0b1117e8;text-align:center;padding:24px}#loading b{font-size:22px;letter-spacing:.12em}#loading span{color:#d7e1e6}#loading small{color:#8fa1ac;max-width:520px}.osm-credit{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));z-index:4;font-size:10px;color:#d7e1e6aa;background:#0b111799;padding:5px 7px;border-radius:6px;pointer-events:none}
+</style>
 </head>
 <body>
 <div id="rotate"><b>ROTATE TO LANDSCAPE</b><span>This proof is designed for landscape play.</span></div>
 <main id="app">
   <canvas id="game"></canvas>
+  <div id="loading"><b>LOADING REAL MALTA</b><span>Fetching Sliema–St Julian’s streets and buildings from OpenStreetMap…</span><small>This version uses actual map geometry, not a hand-drawn approximation.</small></div>
   <header class="hud">
-    <section class="brand"><small>MALTA PROOF</small><b>SLIEMA · ST JULIAN'S</b></section>
+    <section class="brand"><small>OSM MALTA PROOF</small><b>SLIEMA · ST JULIAN'S</b></section>
     <section class="stat"><span>CASH</span><b id="cash">€1,250</b></section>
     <section class="stat"><span>SPEED</span><b id="speed">0</b></section>
     <section class="stat wanted"><span>HEAT</span><b id="wanted">☆☆☆☆☆</b></section>
   </header>
-  <div class="objective" id="objective"><b>JOB</b><span>Drive north along the coast to Balluta.</span></div>
+  <div class="objective" id="objective"><b>JOB</b><span>Loading real road network…</span></div>
   <div class="minimap"><canvas id="map"></canvas></div>
   <div class="controls" aria-label="Touch driving controls">
     <div class="steer"><button id="left">◀</button><button id="right">▶</button></div>
     <div class="pedals"><button id="brake">BRAKE</button><button id="gas">GAS</button></div>
   </div>
   <div class="toast" id="toast"></div>
+  <div class="osm-credit">© OpenStreetMap contributors · ODbL</div>
 </main>
-<script src="game-v2.js?v=2"></script>
+<script src="game-v3.js?v=3"></script>
 </body>
 </html>
