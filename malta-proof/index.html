@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0c1117">
+<title>Harbour City Malta — Coastal Proof</title>
+<link rel="stylesheet" href="../gta2-proof/style.css?v=5">
+</head>
+<body>
+<div id="rotate"><b>ROTATE TO LANDSCAPE</b><span>This proof is designed for landscape play.</span></div>
+<main id="app">
+  <canvas id="game"></canvas>
+  <header class="hud">
+    <section class="brand"><small>MALTA PROOF</small><b>SLIEMA · ST JULIAN'S</b></section>
+    <section class="stat"><span>CASH</span><b id="cash">€1,250</b></section>
+    <section class="stat"><span>SPEED</span><b id="speed">0</b></section>
+    <section class="stat wanted"><span>HEAT</span><b id="wanted">☆☆☆☆☆</b></section>
+  </header>
+  <div class="objective" id="objective"><b>JOB</b><span>Drive north along the coast to Balluta.</span></div>
+  <div class="minimap"><canvas id="map"></canvas></div>
+  <div class="controls" aria-label="Touch driving controls">
+    <div class="steer"><button id="left">◀</button><button id="right">▶</button></div>
+    <div class="pedals"><button id="brake">BRAKE</button><button id="gas">GAS</button></div>
+  </div>
+  <div class="toast" id="toast"></div>
+</main>
+<script src="game.js?v=1"></script>
+</body>
+</html>
